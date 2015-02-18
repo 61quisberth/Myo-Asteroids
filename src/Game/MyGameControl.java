@@ -10,16 +10,13 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 
-public class CubeChaserControl extends AbstractControl{
+public class MyGameControl extends AbstractControl{
 	//private Camera cam;
 	//private Node rootNode;
-	public CubeChaserControl(Camera cam, Node rootNode) {
+
+	public MyGameControl(Camera cam, Node rootNode) {
 		//this.cam = cam;
 		//this.rootNode = rootNode;
-	}
-
-	public String hello(){
-		return "Hello, my name is "+spatial.getName();
 	}
 
 	@Override

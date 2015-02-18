@@ -55,6 +55,8 @@ public class MyGame extends SimpleApplication {
 	@Override
 	public void simpleInitApp() {
 
+
+		flyCam.setMoveSpeed(100f);
 		//obtain camera info: default settings camera at 0,0,10, and rotated to look in the direction 0,0,-1
 		//Vector3f loc = cam.getLocation();
 		//Quaternion rot = cam.getRotation();
