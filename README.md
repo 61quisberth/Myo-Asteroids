@@ -12,6 +12,12 @@ https://github.com/NicholasAStuart/myo-java
 Eclipse project with jMonkeyEngine JAR binaries 
 http://wiki.jmonkeyengine.org/doku.php/jme3:setting_up_jme3_in_eclipse
 
+Loading and saving games (.j3o files)
+http://wiki.jmonkeyengine.org/doku.php/jme3:advanced:save_and_load
+
+overcoming timed locking deafult of myo device 
+https://developer.thalmic.com/docs/api_reference/platform/script-tutorial.html
+
 Progress to be stored on this file as development continues 
 
 To run in eclipse: run MyGame.java 

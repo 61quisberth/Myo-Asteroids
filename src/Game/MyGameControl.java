@@ -13,10 +13,13 @@ import com.jme3.scene.control.Control;
 public class MyGameControl extends AbstractControl{
 	//private Camera cam;
 	//private Node rootNode;
-
 	public MyGameControl(Camera cam, Node rootNode) {
 		//this.cam = cam;
 		//this.rootNode = rootNode;
+	}
+
+	public String hello(){
+		return "Hello, my name is "+spatial.getName();
 	}
 
 	@Override
