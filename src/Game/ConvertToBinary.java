@@ -52,15 +52,16 @@ public class ConvertToBinary extends SimpleApplication {
 
 	@Override
 	public void simpleInitApp() {
-		Spatial ogreModel = assetManager.loadModel("triangle.obj");
+		Spatial model = assetManager.loadModel("triangle.obj");
 
 		DirectionalLight dl = new DirectionalLight();
 		dl.setColor(ColorRGBA.White);
 		dl.setDirection(new Vector3f(0,-1,-1).normalizeLocal());
 		rootNode.addLight(dl);
-		rootNode.attachChild(ogreModel);
+		rootNode.attachChild(model);
 
 	}
+
 	@Override
 	public void stop() {
 		BinaryExporter exporter = BinaryExporter.getInstance();

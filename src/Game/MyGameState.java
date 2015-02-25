@@ -8,7 +8,9 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.Trigger;
 import com.jme3.material.Material;
@@ -34,7 +36,15 @@ public class MyGameState extends AbstractAppState {
 	private AssetManager assetManager;
 	private Ray ray = new Ray();
 	private InputManager inputManager;
-	private final static String MAPPING_ROTATE = "Rotate";
+	private final static String MAPPING_SHOOT = "Shoot";
+	private final static String MAPPING_MOVE_RIGHT= "Move Right";
+	private final static String MAPPING_MOVE_LEFT= "Move Left";
+	private final static String MAPPING_MOVE_UP= "Move Up";
+	private final static String MAPPING_MOVE_DOWN= "Move Down";
+	private final static String MAPPING_SHOOT_KEY = "Shoot Key";
+	private float speedX = 0.0f;
+	private float speedY = 0.0f;
+	private float ballSpeed = 0.0f;
 
 	@SuppressWarnings("deprecation")
 	private static Box mesh = new Box(Vector3f.ZERO, 1, 1, 1);
@@ -46,10 +56,16 @@ public class MyGameState extends AbstractAppState {
 
 	@Override
 	public void update(float tpf) {
-		// check for colision with camera ray 
+		/*
 		CollisionResults results = new CollisionResults();
 		ray.setOrigin(cam.getLocation());
 		ray.setDirection(cam.getDirection());
+		 */
+
+		rootNode.getChild("player").move(speedX,speedY,0);
+		rootNode.getChild("shot").move(0.0f,ballSpeed,0.0f);
+
+		/*`
 		rootNode.collideWith(ray, results);
 		if (results.size() > 0) {
 			Geometry target = results.getClosestCollision().getGeometry();
@@ -62,7 +78,9 @@ public class MyGameState extends AbstractAppState {
 				}
 			} 
 		}
+		 */
 	}        	  
+
 	@Override
 	public void cleanup(){}
 
@@ -84,7 +102,7 @@ public class MyGameState extends AbstractAppState {
         cam.setParallelProjection(true);
         cam.setLocation(new Vector3f(0,0,0.5f));
         flyCam.setEnabled(false);
-        */
+		 */
 
 		flyCam.setMoveSpeed(1f);
 
@@ -93,13 +111,43 @@ public class MyGameState extends AbstractAppState {
 		inputManager.setCursorVisible(true);
 
 		// Left buttom mouse trigger
-		final Trigger TRIGGER_ROTATE = new MouseButtonTrigger(MouseInput.BUTTON_LEFT);
-
+		final Trigger TRIGGER_SHOOT= new MouseButtonTrigger(MouseInput.BUTTON_LEFT);
 		// add mapping and listener
-		inputManager.addMapping(MAPPING_ROTATE, TRIGGER_ROTATE);
-		inputManager.addListener(analogListener, new String[]{MAPPING_ROTATE});
+		inputManager.addMapping(MAPPING_SHOOT, TRIGGER_SHOOT);
+		inputManager.addListener(analogListener, new String[]{MAPPING_SHOOT});
+		
+		//moving keybaord trigger
+		final Trigger TRIGGER_SHOOT_KEY = new KeyTrigger(KeyInput.KEY_SPACE);
+		// add mapping and listener
+		inputManager.addMapping(MAPPING_SHOOT_KEY, TRIGGER_SHOOT_KEY);
+		inputManager.addListener(actionListener, new String[]{MAPPING_SHOOT_KEY});
 
-		genRect();
+
+		//moving keybaord trigger
+		final Trigger TRIGGER_MOVE_RIGHT = new KeyTrigger(KeyInput.KEY_RIGHT);
+		// add mapping and listener
+		inputManager.addMapping(MAPPING_MOVE_RIGHT, TRIGGER_MOVE_RIGHT);
+		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_RIGHT});
+
+		//moving keybaord trigger
+		final Trigger TRIGGER_MOVE_LEFT = new KeyTrigger(KeyInput.KEY_LEFT);
+		// add mapping and listener
+		inputManager.addMapping(MAPPING_MOVE_LEFT, TRIGGER_MOVE_LEFT);
+		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_LEFT});
+
+		//moving keybaord trigger
+		final Trigger TRIGGER_MOVE_UP = new KeyTrigger(KeyInput.KEY_UP);
+		// add mapping and listener
+		inputManager.addMapping(MAPPING_MOVE_UP, TRIGGER_MOVE_UP);
+		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_UP});
+
+		//moving keybaord trigger
+		final Trigger TRIGGER_MOVE_DOWN= new KeyTrigger(KeyInput.KEY_DOWN);
+		// add mapping and listener
+		inputManager.addMapping(MAPPING_MOVE_DOWN, TRIGGER_MOVE_DOWN);
+		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_DOWN});
+
+		genBoundingBox();
 		genPlayer();
 		//makeCubes(10);
 	}
@@ -114,7 +162,7 @@ public class MyGameState extends AbstractAppState {
 		return geom;
 	}
 
-	private void genRect(){
+	private void genBoundingBox(){
 
 		Line line0 = new Line(new Vector3f(-70.0f,70.0f,0.0f) ,new Vector3f(70.0f,70.0f,0.0f) );
 		Line line1 = new Line(new Vector3f(70.0f,70.0f,0.0f) ,new Vector3f(70.0f,-70.0f,0.0f) );
@@ -125,7 +173,7 @@ public class MyGameState extends AbstractAppState {
 		line1.setLineWidth(2.0f);
 		line2.setLineWidth(2.0f);
 		line3.setLineWidth(2.0f);
-	
+
 		Geometry side0= new Geometry("side 0", line0);
 		Geometry side1 = new Geometry("side 1", line1);
 		Geometry side2 = new Geometry("side 2", line2);
@@ -141,16 +189,15 @@ public class MyGameState extends AbstractAppState {
 		side3.setMaterial(side0m);                  
 
 		Node boundingBox = new Node("bounding box");
-		
+
 		boundingBox.attachChild(side0);
 		boundingBox.attachChild(side1);
 		boundingBox.attachChild(side2);
 		boundingBox.attachChild(side3);
-		
+
 		rootNode.attachChild(boundingBox);
 	}
-	
-	
+
 	@SuppressWarnings("deprecation")
 	private void genPlayer(){
 		// create main character cube 
@@ -181,9 +228,11 @@ public class MyGameState extends AbstractAppState {
 		shotNode.attachChild(shotGeom);
 		// exapmple method call for myBox
 		//mainNode.attachChild(myBox("Blue Cube", new Vector3f(0, -1.5f, 0), ColorRGBA.Blue));
+		//playerNode.attachChild(shotNode);
 		playerNode.attachChild(shotNode);
 		rootNode.attachChild(playerNode);
 	}
+
 
 	private void makeCubes(int number) {
 		for (int i = 0; i < number; i++) {
@@ -191,7 +240,7 @@ public class MyGameState extends AbstractAppState {
 			Vector3f loc = new Vector3f(
 					FastMath.nextRandomInt(-20, 20),
 					FastMath.nextRandomInt(-20, 20),
-					FastMath.nextRandomInt(-20, 20));
+					0.0f);
 			//rootNode.attachChild(myBox("Cube" + i, loc, ColorRGBA.randomColor()));
 			Geometry geom = myBox("Cube" + i, loc, ColorRGBA.randomColor());
 			if (FastMath.nextRandomInt(1, 4) == 4) {
@@ -205,7 +254,7 @@ public class MyGameState extends AbstractAppState {
 	private AnalogListener analogListener = new AnalogListener() {
 
 		public void onAnalog(String name, float intensity, float tpf){
-			if (name.equals(MAPPING_ROTATE)) {
+			if (name.equals(MAPPING_SHOOT)) {
 				// create collision parameters
 				CollisionResults results0 = new CollisionResults();
 				CollisionResults results1 = new CollisionResults();
@@ -215,7 +264,6 @@ public class MyGameState extends AbstractAppState {
 				Vector3f dir = cam.getWorldCoordinates( new Vector2f(click2d.getX(), click2d.getY()), 1f).subtractLocal(click3d);
 				Ray ray = new Ray(click3d, dir);
 
-				
 				// check for collision
 				Vector3f min = new Vector3f(-70.0f,-70.0f,0.0f);
 				Vector3f max = new Vector3f(70.0f,70.0f,0.0f);
@@ -231,9 +279,12 @@ public class MyGameState extends AbstractAppState {
 					Geometry target = results0.getClosestCollision().getGeometry();
 
 					if (target.getName().equals("player cube")) {
-						if (results1.size() <= 6)
+						if (results1.size() <= 6){
 							System.out.println("Out of Bounds!!");
-						rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
+							rootNode.getChild("shot").getLocalTranslation().set(0.0f, 0.0f, 0.0f);
+							ballSpeed = 0;
+						}
+						//rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
 						rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
 					} 
 				} 
@@ -246,6 +297,30 @@ public class MyGameState extends AbstractAppState {
 		}//end onAnalog 
 	}; // end analogListener
 
+	private ActionListener actionListener = new ActionListener() {
+		public void onAction(String name, boolean isPressed, float tpf) {
+			if (name.equals(MAPPING_MOVE_RIGHT) && !isPressed) {
+				// implement action here
+				speedX +=0.1f;
+			}
+			else if (name.equals(MAPPING_MOVE_LEFT) && !isPressed) {
+				// implement action here
+				speedX -=0.1f;
+			}
+			else if (name.equals(MAPPING_MOVE_UP) && !isPressed) {
+				// implement action here
+				speedY +=0.1f;
+			}
+			else if (name.equals(MAPPING_MOVE_DOWN) && !isPressed) {
+				// implement action here
+				speedY -=0.1f;
+			}
+			else if (name.equals(MAPPING_SHOOT_KEY) && !isPressed) {
+				// implement action here
+				ballSpeed = 1.0f;
+			}
+
+		}
+	};
 
 }
-

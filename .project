@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>Assets/splash.png</name>
-			<type>1</type>
-			<location>/Users/jason_quisberth/Documents/workspace/HelloJM3/Assets/splash.png</location>
-		</link>
-	</linkedResources>
 </projectDescription>

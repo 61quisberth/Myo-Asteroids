@@ -25,6 +25,7 @@ public class MyGameControl extends AbstractControl{
 	@Override
 	protected void controlUpdate(float tpf) {
 		spatial.rotate(tpf, tpf, tpf);
+		spatial.rotate(tpf, tpf, tpf);
 	}
 
 
