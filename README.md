@@ -26,6 +26,13 @@ To include jar in project:
 right click referenced libraries and select Build Path -> Configure Build Path 
 add external jars -> [select your jar]
 
+In blender, to include ogre3d exporter tool from googlecode
+https://code.google.com/p/blender2ogre/downloads/list
+
+Assets folder breakdown:
+Textures: Original models, textures and materials
+Models: .j3o jmonkey model files 
+
 Updates
 
 2/11/2015 (assignment 2 due date):
@@ -36,3 +43,12 @@ todo: Complete appstate
 2/18/2015 
 Completed cube chaser example in ch 3 of textbook, complete with appstate desired for MyGame
 todo: Implement appstate with MyGame
+
+3/03/2015
+Appstate for MyGame complete
+Completed Ch 4 & 5 of textbook
+Assets folder enhanced with subfolders for textures and models
+Basic animation and model imported 
+Worked on basic controls of main player
+introduced lighting, lite gui, and sample code for anim controls and listeners
+todo: clean up clutter from cram coding...

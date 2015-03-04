@@ -7,24 +7,28 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.Trigger;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.input.*;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
 import com.jme3.scene.shape.Line;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import com.jme3.ui.Picture;
 import com.jme3.input.FlyByCamera;
 
 public class MyGameState extends AbstractAppState {
@@ -34,7 +38,6 @@ public class MyGameState extends AbstractAppState {
 	private Camera cam;
 	private Node rootNode;
 	private AssetManager assetManager;
-	private Ray ray = new Ray();
 	private InputManager inputManager;
 	private final static String MAPPING_SHOOT = "Shoot";
 	private final static String MAPPING_MOVE_RIGHT= "Move Right";
@@ -45,40 +48,52 @@ public class MyGameState extends AbstractAppState {
 	private float speedX = 0.0f;
 	private float speedY = 0.0f;
 	private float ballSpeed = 0.0f;
+	// create collision parameters
+	//private CollisionResults results0 = new CollisionResults();
+	private CollisionResults results1 = new CollisionResults();
+
+	// check for collision
+	private Vector3f min = new Vector3f(-70.0f,-70.0f,0.0f);
+	private Vector3f max = new Vector3f(70.0f,70.0f,0.0f);
+	private BoundingBox bb = new BoundingBox(min, max);
+	// guide class field 
+	private BitmapText distanceText;
+	protected BitmapFont guiFont;
 
 	@SuppressWarnings("deprecation")
 	private static Box mesh = new Box(Vector3f.ZERO, 1, 1, 1);
 
 	private int counter=0;
+	private Camera camera;
+	private Node guiNode;
 	public int getCounter() { 
 		return counter; 
 	}
 
 	@Override
 	public void update(float tpf) {
-		/*
-		CollisionResults results = new CollisionResults();
-		ray.setOrigin(cam.getLocation());
-		ray.setDirection(cam.getDirection());
-		 */
 
 		rootNode.getChild("player").move(speedX,speedY,0);
 		rootNode.getChild("shot").move(0.0f,ballSpeed,0.0f);
 
-		/*`
-		rootNode.collideWith(ray, results);
-		if (results.size() > 0) {
-			Geometry target = results.getClosestCollision().getGeometry();
-			if (target.getControl(CubeChaserControl.class) != null) {
-				if (cam.getLocation().
-						distance(target.getLocalTranslation()) < 10) {
-					target.move(cam.getDirection());
-					System.out.println(target.getControl(CubeChaserControl.class).hello() + " and I am running away from " + cam.getLocation() );
-					counter++;
-				}
-			} 
+		// check for intersection 
+		rootNode.getChild("shot").collideWith(bb,results1);
+
+
+		//System.out.println(closest.getDistance());
+		//System.out.println("What was hit? " + closest.getGeometry().getName() );
+
+		//System.out.println(results1.getClosestCollision().getDistance());
+		//System.out.println(results1.size());
+		if (results1.size() <= 6){
+			//System.out.println("Out of Bounds!!");
+			rootNode.getChild("shot").getLocalTranslation().set(0.0f, 0.0f, 0.0f);
+			ballSpeed = 0;
 		}
-		 */
+		//rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
+		//rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
+		results1.clear();
+
 	}        	  
 
 	@Override
@@ -92,8 +107,56 @@ public class MyGameState extends AbstractAppState {
 		this.rootNode = this.app.getRootNode();
 		this.assetManager = this.app.getAssetManager();
 		this.inputManager = this.app.getInputManager();
+		this.camera = this.app.getCamera();
 		this.flyCam = this.app.getFlyByCamera();
+		this.guiNode = this.app.getGuiNode();
+		//guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
 
+		// turn off default gui
+		this.app.setDisplayStatView(false);
+		this.app.setDisplayFps(false);
+		
+		// custom gui start
+		// load and attach user interface frame
+		Picture frame = new Picture("User interface frame");
+	       frame.setImage(assetManager, "Interface/frame.png", false);
+	       frame.move(camera.getWidth()/2-265, 0, -2);
+	       frame.setWidth(530);
+	       frame.setHeight(10);
+	       guiNode.attachChild(frame);
+	       
+	       // load and attach logo of monkey 
+	       Picture logo = new Picture("logo");
+	       logo.setImage(assetManager, "Interface/Monkey.png", true);
+	       logo.move(camera.getWidth()/2-47, 2, -1);
+	       logo.setWidth(95);
+	       logo.setHeight(75);
+	       guiNode.attachChild(logo);
+
+
+		// load font, initialize bitmap test obj and attach to gui node
+		guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+		distanceText = new BitmapText(guiFont);
+		distanceText.setSize(guiFont.getCharSet().getRenderedSize());
+		distanceText.move(
+				camera.getWidth()/2,         // X
+				distanceText.getLineHeight(),  // Y
+				0);                            // Z (depth layer)
+		distanceText.setColor(ColorRGBA.White);
+		//distanceText.move(settings.getWidth()/2+50, distanceText.getLineHeight()-20,0);
+		guiNode.attachChild(distanceText);
+		// end of custom gui code
+
+	    /** A white, spot light source. */
+	    PointLight lamp = new PointLight();
+	    lamp.setPosition(new Vector3f(-1,1,15));
+	    lamp.setColor(ColorRGBA.White);
+	    rootNode.addLight(lamp); 
+	    /* A white ambient light source */
+	    AmbientLight ambient = new AmbientLight();
+	    ambient.setColor(ColorRGBA.White);
+	    rootNode.addLight(ambient);		
+		
 		Vector3f loc = new Vector3f(0.0f,0.0f,180f);
 		cam.setLocation(loc);
 
@@ -115,7 +178,7 @@ public class MyGameState extends AbstractAppState {
 		// add mapping and listener
 		inputManager.addMapping(MAPPING_SHOOT, TRIGGER_SHOOT);
 		inputManager.addListener(analogListener, new String[]{MAPPING_SHOOT});
-		
+
 		//moving keybaord trigger
 		final Trigger TRIGGER_SHOOT_KEY = new KeyTrigger(KeyInput.KEY_SPACE);
 		// add mapping and listener
@@ -203,10 +266,14 @@ public class MyGameState extends AbstractAppState {
 		// create main character cube 
 		Box playerBox = new Box(Vector3f.ZERO, 3, 3, 3);
 		Geometry playerGeom = new Geometry("player cube", playerBox);
-		Material playerMat = new Material(assetManager,
-				"Common/MatDefs/Misc/Unshaded.j3md");
-		playerMat.setColor("Color", ColorRGBA.Red);
-		// give the object the blue material
+		//Material playerMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+		Material playerMat= new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+		//playerMat.setColor("Color", ColorRGBA.Red);
+		playerMat.setBoolean("UseMaterialColors", true);
+		playerMat.setColor("Ambient", ColorRGBA.Black);
+		playerMat.setColor("Diffuse", ColorRGBA.Red);
+		playerMat.setColor("Specular", ColorRGBA.White );
+		playerMat.setFloat("Shininess", 100f); // [1,128]
 		playerGeom.setMaterial(playerMat);
 
 		// create a shot cube 
@@ -255,43 +322,8 @@ public class MyGameState extends AbstractAppState {
 
 		public void onAnalog(String name, float intensity, float tpf){
 			if (name.equals(MAPPING_SHOOT)) {
-				// create collision parameters
-				CollisionResults results0 = new CollisionResults();
-				CollisionResults results1 = new CollisionResults();
-				Vector2f click2d = inputManager.getCursorPosition();
-				//Vector2f click2d = new Vector2f( inputManager.getCursorPosition() );
-				Vector3f click3d = cam.getWorldCoordinates(new Vector2f(click2d.getX(), click2d.getY()), 0f);
-				Vector3f dir = cam.getWorldCoordinates( new Vector2f(click2d.getX(), click2d.getY()), 1f).subtractLocal(click3d);
-				Ray ray = new Ray(click3d, dir);
 
-				// check for collision
-				Vector3f min = new Vector3f(-70.0f,-70.0f,0.0f);
-				Vector3f max = new Vector3f(70.0f,70.0f,0.0f);
-
-				BoundingBox bb = new BoundingBox(min, max);
-
-				// check for intersection 
-				rootNode.getChild("shot").collideWith(bb,results1);
-
-				rootNode.collideWith(ray, results0);
-				if (results0.size() > 0) {
-					//System.out.println("Selection: Red Cube" );
-					Geometry target = results0.getClosestCollision().getGeometry();
-
-					if (target.getName().equals("player cube")) {
-						if (results1.size() <= 6){
-							System.out.println("Out of Bounds!!");
-							rootNode.getChild("shot").getLocalTranslation().set(0.0f, 0.0f, 0.0f);
-							ballSpeed = 0;
-						}
-						//rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
-						rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
-					} 
-				} 
-				// handle no collision 
-				else {
-					//System.out.println("Selection: Nothing" );
-				}
+				rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
 
 			}// end if 
 		}//end onAnalog 

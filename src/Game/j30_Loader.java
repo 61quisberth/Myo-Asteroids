@@ -10,7 +10,7 @@ public class j30_Loader extends SimpleApplication {
 	@Override
 	public void simpleInitApp() {
 		//Spatial mymodel = assetManager.loadModel("MyModel.j3o");
-		Node mymodel = (Node)assetManager.loadModel("MyModel.j3o");
+		Node mymodel = (Node)assetManager.loadModel("./Models/MyModel.j3o");
 		rootNode.attachChild(mymodel);
 		DirectionalLight sun = new DirectionalLight();
 		sun.setDirection((new Vector3f(-0.5f, -0.5f, -0.5f)));

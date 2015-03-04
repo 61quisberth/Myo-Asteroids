@@ -23,7 +23,7 @@ public class MyGame extends SimpleApplication {
 		// custom settings page 
 		settings0.setTitle("Myo Monkey Asteroids");
 		// source the image where the splash is from 
-		settings0.setSettingsDialogImage("splash.png");
+		settings0.setSettingsDialogImage("./Interface/splash.png");
 		myoApp.setSettings(settings0); // apply settings to app
 		myoApp.start(); // start the game
 

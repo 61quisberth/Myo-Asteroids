@@ -43,36 +43,37 @@ import com.jme3.scene.Spatial;
 import java.io.File;
 import java.io.IOException;
 
-public class ConvertToBinary extends SimpleApplication {
+public class ConvertToj3o extends SimpleApplication {
 
 	public static void main(String[] args){
-		ConvertToBinary app = new ConvertToBinary();
+		ConvertToj3o app = new ConvertToj3o();
 		app.start();
 	}
 
 	@Override
 	public void simpleInitApp() {
-		Spatial model = assetManager.loadModel("triangle.obj");
+		Spatial mymodel = assetManager.loadModel("./Textures/Suzanne.001.mesh.xml");
 
 		DirectionalLight dl = new DirectionalLight();
 		dl.setColor(ColorRGBA.White);
 		dl.setDirection(new Vector3f(0,-1,-1).normalizeLocal());
 		rootNode.addLight(dl);
-		rootNode.attachChild(model);
+		rootNode.attachChild(mymodel);
 
 	}
 
 	@Override
 	public void stop() {
 		BinaryExporter exporter = BinaryExporter.getInstance();
-		File file = new File("Assets/MyModel.j3o");
+		File file = new File("./Assets/Models/MyModel.j3o");
 		try {
 			exporter.save(rootNode, file);
+			System.out.println("Converted file to j3o!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			System.out.println("error in io");
 			e.printStackTrace();
 		}
-		System.out.println("Converted file to j3o!");
 		super.stop(); // continue quitting the game
 	}	
 
