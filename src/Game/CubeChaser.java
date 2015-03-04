@@ -1,3 +1,4 @@
+// Sample project from textbook to test app state and learn control methods 
 //Game by Jason Quisberth 
 //when setting up from scratch, create assets folder through eclipse 
 package Game;

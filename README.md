@@ -12,6 +12,22 @@ https://github.com/NicholasAStuart/myo-java
 Eclipse project with jMonkeyEngine JAR binaries 
 http://wiki.jmonkeyengine.org/doku.php/jme3:setting_up_jme3_in_eclipse
 
+File descriptions
+AnimateModel.java -> Loads a j3o animated object and performs animation with AnimControls and AnimChannels
+ConvertToj3o.java -> Converts .xml file into j3o (built into jmonkey sdk)
+CubeChaser.java -> Sample game from textbook to educate use of appstate and control
+CuberChaserControl.java -> Sample game from textbook's control method
+CubeChaseState.java -> Sample game from textbook's appstate
+j30_loader.java -> Loads and redners a j3o model for testing 
+LoadAndSave.java -> Loads and saves objects into "saved state" scene for research into saving states
+MaterialColor.java -> Sample Code form Jmonkey used to educate how to include light sources and material 
+MyGame.java -> The main game project file
+MyGameControl.java -> the main game project control method
+MyGameState.java -> the main game project app state
+PhysicsTest.java -> testing with physics sample code from jmonkey
+SimpleUserInterface.java -> Sample code for educaiton on gui's 
+TestJaime.java -> Sample code for importing and animating object
+
 Loading and saving games (.j3o files)
 http://wiki.jmonkeyengine.org/doku.php/jme3:advanced:save_and_load
 
@@ -52,3 +68,7 @@ Basic animation and model imported
 Worked on basic controls of main player
 introduced lighting, lite gui, and sample code for anim controls and listeners
 todo: clean up clutter from cram coding...
+
+3/04/15
+Included file descriptions on README
+Documented files

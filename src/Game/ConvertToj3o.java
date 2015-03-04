@@ -36,6 +36,7 @@ package Game;
 import com.jme3.app.SimpleApplication;
 import com.jme3.export.binary.BinaryExporter;
 import com.jme3.light.DirectionalLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
@@ -52,20 +53,33 @@ public class ConvertToj3o extends SimpleApplication {
 
 	@Override
 	public void simpleInitApp() {
-		Spatial mymodel = assetManager.loadModel("./Textures/Suzanne.001.mesh.xml");
-
+		// loads a .xml file and adds some material proerties 
+		Spatial mymodel = assetManager.loadModel("./Textures/Monkey/Suzanne.mesh.xml"); 
+	    Material modelMat = new Material(assetManager, 
+	            "Common/MatDefs/Light/Lighting.j3md");
+	    modelMat.setBoolean("UseMaterialColors", true);
+	    modelMat.setColor("Ambient", ColorRGBA.Gray );
+	    modelMat.setColor("Diffuse", ColorRGBA.Green);
+	    modelMat.setColor("Specular", ColorRGBA.White );
+	    modelMat.setFloat("Shininess", 20f); // [1,128]
+	    mymodel.setMaterial(modelMat);
+	    
+	    // adding directional light to become visible
 		DirectionalLight dl = new DirectionalLight();
 		dl.setColor(ColorRGBA.White);
 		dl.setDirection(new Vector3f(0,-1,-1).normalizeLocal());
 		rootNode.addLight(dl);
 		rootNode.attachChild(mymodel);
+		
+		rootNode.rotate(180, 0, 0);
 
 	}
 
+	// method to save file into j3o upon closing of diaply or exit of main program
 	@Override
 	public void stop() {
 		BinaryExporter exporter = BinaryExporter.getInstance();
-		File file = new File("./Assets/Models/MyModel.j3o");
+		File file = new File("./Assets/Models/Monkey/Suzanne.j3o");
 		try {
 			exporter.save(rootNode, file);
 			System.out.println("Converted file to j3o!");

@@ -1,4 +1,4 @@
-// lighting test 
+// lighting test frmo jmokney website
 package Game;
 
 import com.jme3.app.SimpleApplication;

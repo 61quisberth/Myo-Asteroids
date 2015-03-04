@@ -1,3 +1,4 @@
+// code to load j3o file and save into existing saved scene file for saving scene testing 
 package Game;
 // an edit of the orgreconverter code provided by jMonkeyEngine 
 
@@ -54,26 +55,29 @@ public class LoadAndSave extends SimpleApplication {
 
 	@Override
 	public void simpleInitApp() {
-		 try {
-	           Node loadedNode = (Node) assetManager.loadModel(
-	                                    "./SavedGames/savedgame.j3o");
-	           rootNode.attachChild(loadedNode);
-	           System.out.println("saved game loaded!");
-	       } catch (com.jme3.asset.AssetNotFoundException e) {
-	    	  System.out.println("count not find saved game"); 
-	       }	
+		try {
+			// load existing scene 
+			Node loadedNode = (Node) assetManager.loadModel(
+					"./SavedGames/savedgame.j3o");
+			rootNode.attachChild(loadedNode);
+			System.out.println("saved game loaded!");
+		} catch (com.jme3.asset.AssetNotFoundException e) {
+			System.out.println("count not find saved game"); 
+		}	
 
-		
+
+		// load model to add to scene
 		Spatial mymodel = assetManager.loadModel("./Models/MyModel.j3o");
-
-		    mymodel.move(
-		        FastMath.nextRandomFloat()*10-5,
-		        FastMath.nextRandomFloat()*10-5,
-		        FastMath.nextRandomFloat()*10-5);
-		    rootNode.attachChild(mymodel);
+		// move at random location
+		mymodel.move(
+				FastMath.nextRandomFloat()*10-5,
+				FastMath.nextRandomFloat()*10-5,
+				FastMath.nextRandomFloat()*10-5);
+		rootNode.attachChild(mymodel);
 
 	}
 
+	// method: upon near end of program, save scene graph to be open again later 
 	@Override
 	public void stop() {
 		BinaryExporter exporter = BinaryExporter.getInstance();
@@ -88,6 +92,6 @@ public class LoadAndSave extends SimpleApplication {
 		}
 		super.stop(); // continue quitting the game
 	}	
-	
+
 
 }

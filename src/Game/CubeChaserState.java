@@ -1,3 +1,4 @@
+// app state method for sample project for education
 package Game;
 
 import com.jme3.app.Application;
@@ -44,6 +45,7 @@ public class CubeChaserState extends AbstractAppState {
 
 	@Override
 	public void update(float tpf) {
+		// test for camera collision constantly
 		CollisionResults results = new CollisionResults();
 		ray.setOrigin(cam.getLocation());
 		ray.setDirection(cam.getDirection());
@@ -63,6 +65,7 @@ public class CubeChaserState extends AbstractAppState {
 	@Override
 	public void cleanup(){}
 
+	// intialize parameters from application file
 	@Override
 	public void initialize(AppStateManager stateManager, Application app) {
 		super.initialize(stateManager, app);
@@ -99,6 +102,7 @@ public class CubeChaserState extends AbstractAppState {
 		return geom;
 	}
 
+	// method to generate spatials for scene
 	private void makeCubes(int number) {
 		for (int i = 0; i < number; i++) {
 			// randomize 3D coordinates
@@ -128,7 +132,7 @@ public class CubeChaserState extends AbstractAppState {
 				Vector3f dir = cam.getWorldCoordinates( new Vector2f(click2d.getX(), click2d.getY()), 1f).subtractLocal(click3d);
 				Ray ray = new Ray(click3d, dir);
 
-				// check for collision
+				// check for collision with mouse click location
 				rootNode.collideWith(ray, results);
 				if (results.size() > 0) {
 					//System.out.println("Selection: Red Cube" );

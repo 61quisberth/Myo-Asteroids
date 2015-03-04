@@ -68,6 +68,7 @@ public class AnimateModel extends SimpleApplication implements AnimEventListener
 		app.start();
 	}
 
+	// Action listener for changing animation states
 	private ActionListener actionListener = new ActionListener() {
 		public void onAction(String name, boolean isPressed, float tpf)
 		{
@@ -81,6 +82,7 @@ public class AnimateModel extends SimpleApplication implements AnimEventListener
 			}
 		} };
 
+		// Analog listener for moving object as it is in walking state
 		private AnalogListener analogListener = new AnalogListener() {
 			public void onAnalog(String name, float intensity, float tpf) {
 				if (name.equals(MAPPING_WALK) ) {
@@ -88,6 +90,7 @@ public class AnimateModel extends SimpleApplication implements AnimEventListener
 				} }
 		};
 
+		// Method to perform action upon animation change
 		public void onAnimChange(AnimControl control,
 				AnimChannel channel, String animName) {
 			if (animName.equals(ANI_WALK)) {
@@ -99,6 +102,7 @@ public class AnimateModel extends SimpleApplication implements AnimEventListener
 			}
 		}
 
+		// method performed after an animcation cycle is complete
 		public void onAnimCycleDone(AnimControl control,
 				AnimChannel channel, String animName)
 		{

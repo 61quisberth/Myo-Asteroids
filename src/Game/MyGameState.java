@@ -73,6 +73,7 @@ public class MyGameState extends AbstractAppState {
 	@Override
 	public void update(float tpf) {
 
+		// moving player and shot nodes for gameplay
 		rootNode.getChild("player").move(speedX,speedY,0);
 		rootNode.getChild("shot").move(0.0f,ballSpeed,0.0f);
 
@@ -92,6 +93,7 @@ public class MyGameState extends AbstractAppState {
 		}
 		//rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
 		//rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
+		// clear collision results for boudning box
 		results1.clear();
 
 	}        	  
@@ -225,7 +227,9 @@ public class MyGameState extends AbstractAppState {
 		return geom;
 	}
 
+	// method to genereate bounding box for gameplay
 	private void genBoundingBox(){
+		// using 4 lines, we create a box
 
 		Line line0 = new Line(new Vector3f(-70.0f,70.0f,0.0f) ,new Vector3f(70.0f,70.0f,0.0f) );
 		Line line1 = new Line(new Vector3f(70.0f,70.0f,0.0f) ,new Vector3f(70.0f,-70.0f,0.0f) );
@@ -261,6 +265,7 @@ public class MyGameState extends AbstractAppState {
 		rootNode.attachChild(boundingBox);
 	}
 
+	// method to create player object
 	@SuppressWarnings("deprecation")
 	private void genPlayer(){
 		// create main character cube 
