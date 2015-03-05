@@ -1,7 +1,8 @@
 /** 
  * Main java project control 
- * @author Jason Quisberth 
+ * @author Jason Quisberth  2369861
  * @version 1.0 Spring 2015
+ * @since Mar 05 2015
  */
 package Game;
 

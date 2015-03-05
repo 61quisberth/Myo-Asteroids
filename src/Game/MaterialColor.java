@@ -1,6 +1,7 @@
 /**
  * This demo shows a single-colored lit sphere using material color properties.
  * Lighting test from jmokney website
+ * Jason Quisberth 2369861
  */
 package Game;
 

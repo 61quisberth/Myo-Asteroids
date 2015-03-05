@@ -1,5 +1,12 @@
-/*
+/** 
  * Jmonkey test jaime reference file
+ * 2369861
+ * @author Jason Quisberth 
+ * @since Mar 05 2015
+ * @version 1.0 Spring 2015
+ */
+/*
+ * 
  * Copyright (c) 2009-2012 jMonkeyEngine
  * All rights reserved.
  *

@@ -1,6 +1,7 @@
 /**
  * Loads a j3o file and renders for testing purposes
- * @author Jason Quisberth
+ * @author Jason Quisberth 2369861
+ * @since Mar 05 2015
  */
 package Game;
 

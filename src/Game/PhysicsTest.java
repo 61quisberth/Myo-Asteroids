@@ -1,3 +1,7 @@
+/** 
+ * Example java file in order to test jmonkey physics 
+ * Jason Quibserth 2369861
+ */
 package Game;
 
 import com.jme3.app.SimpleApplication;

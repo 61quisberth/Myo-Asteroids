@@ -1,4 +1,7 @@
-// code to load j3o file and save into existing saved scene file for saving scene testing 
+/** 
+ * Jason Quisberth 2369861
+ * @since Mar 05 2015
+ */
 package Game;
 // an edit of the orgreconverter code provided by jMonkeyEngine 
 
@@ -36,10 +39,7 @@ package Game;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.export.binary.BinaryExporter;
-import com.jme3.light.DirectionalLight;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
