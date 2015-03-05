@@ -15,9 +15,6 @@ http://wiki.jmonkeyengine.org/doku.php/jme3:setting_up_jme3_in_eclipse
 File descriptions
 AnimateModel.java -> Loads a j3o animated object and performs animation with AnimControls and AnimChannels
 ConvertToj3o.java -> Converts .xml file into j3o (built into jmonkey sdk)
-CubeChaser.java -> Sample game from textbook to educate use of appstate and control
-CuberChaserControl.java -> Sample game from textbook's control method
-CubeChaseState.java -> Sample game from textbook's appstate
 j30_loader.java -> Loads and redners a j3o model for testing 
 LoadAndSave.java -> Loads and saves objects into "saved state" scene for research into saving states
 MaterialColor.java -> Sample Code form Jmonkey used to educate how to include light sources and material 
@@ -72,3 +69,6 @@ todo: clean up clutter from cram coding...
 3/04/15
 Included file descriptions on README
 Documented files
+
+3/05/15
+Created javadoc-style documentation

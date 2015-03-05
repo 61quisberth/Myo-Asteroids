@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package Game;
 
 import com.jme3.app.SimpleApplication;
@@ -8,13 +11,15 @@ import com.jme3.ui.Picture;
 
 public class SimpleUserInterface extends SimpleApplication{
 
-	private int distance=0;
-	private BitmapText distanceText;
+	private int distance=0; // value to update and print to gui
+	private BitmapText distanceText; //text to printout to gui
 
 
+	/**
+	 * Init: Override default gui with custom gui 
+	 */
 	@Override
 	public void simpleInitApp() {
-		// TODO Auto-generated method stub
 		setDisplayStatView(false);
 		setDisplayFps(false);
 
@@ -43,17 +48,26 @@ public class SimpleUserInterface extends SimpleApplication{
 				settings.getWidth()/2,         // X
 				distanceText.getLineHeight(),  // Y
 				0);                            // Z (depth layer)
-		distanceText.setColor(ColorRGBA.White);
+		distanceText.setColor(ColorRGBA.White); // color of display
 		//distanceText.move(settings.getWidth()/2+50, distanceText.getLineHeight()-20,0);
 		guiNode.attachChild(distanceText);
 	}
 
+	/**
+	 * Create object of simpleApplication and start application
+	 * @param args
+	 */
 	public static void main(String[] args){
 		SimpleUserInterface sui = new SimpleUserInterface();
 		sui.start();
 
 	}
+	/**
+	 * Updates the gui 
+	 * @param tbf 	Translucent Render Bucket
+	 */
 	public void simpleUpdate(float tpf) {
+		// obtain distance from camera and print out to gui
 		distance = (int) Vector3f.ZERO.distance(cam.getLocation());
 		distanceText.setText("Distance: "+distance + " Hello World");
 	}

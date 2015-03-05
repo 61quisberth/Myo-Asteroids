@@ -1,34 +1,36 @@
-//Game by Jason Quisberth 
-//when setting up from scratch, create assets folder through eclipse 
+/** 
+ * Main java project file
+ * @author Jason Quisberth 
+ * @version 1.0 Spring 2015
+ */
 package Game;
 
-//TODO: create shot fired scene translation of shot cube
-
-
-// required imports
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
 
 public class MyGame extends SimpleApplication {
 
-	// some static variables for the mapping and shot cube geometry
-	//private Geometry geom;
-	//private static Box mesh = new Box(Vector3f.ZERO,1.0f,1.0f,1.0f);
-
+	/**
+	 * main method which creates instance of SimpleApplication  
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		MyGame myoApp = new MyGame();
 
 		AppSettings settings0 = new AppSettings(true);
-		// custom settings page 
-		settings0.setTitle("Myo Monkey Asteroids");
-		// source the image where the splash is from 
-		settings0.setSettingsDialogImage("./Interface/splash.png");
+		
+		settings0.setTitle("Myo Monkey Asteroids"); // custom settings page 
+		
+		settings0.setSettingsDialogImage("./Interface/splash.png"); // custom splash page 
+		// ^ source: http://fc07.deviantart.net/fs70/f/2012/148/3/a/water_splash_png_by_starlaa1-d51fstj.png
 		myoApp.setSettings(settings0); // apply settings to app
 		myoApp.start(); // start the game
 
 	}
-
+	/**
+	 *  main method to create instance of AppState and attaching it to the state manager
+	 */
 	@Override
 	public void simpleInitApp() {
 		MyGameState state = new MyGameState();

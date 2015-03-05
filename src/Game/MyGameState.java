@@ -1,3 +1,8 @@
+/** 
+ * main java project appstate
+ * @author Jason Quisberth 
+ * @version 1.0 Spring 2015
+ */
 package Game;
 
 import com.jme3.app.Application;
@@ -21,7 +26,6 @@ import com.jme3.material.Material;
 import com.jme3.input.*;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Ray;
 import com.jme3.scene.shape.Line;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -33,39 +37,42 @@ import com.jme3.input.FlyByCamera;
 
 public class MyGameState extends AbstractAppState {
 
-	private SimpleApplication app;
-	private FlyByCamera flyCam;
-	private Camera cam;
-	private Node rootNode;
-	private AssetManager assetManager;
-	private InputManager inputManager;
-	private final static String MAPPING_SHOOT = "Shoot";
-	private final static String MAPPING_MOVE_RIGHT= "Move Right";
-	private final static String MAPPING_MOVE_LEFT= "Move Left";
-	private final static String MAPPING_MOVE_UP= "Move Up";
-	private final static String MAPPING_MOVE_DOWN= "Move Down";
-	private final static String MAPPING_SHOOT_KEY = "Shoot Key";
+	private SimpleApplication app; // simple application
+	private FlyByCamera flyCam; // fly cameare
+	private Camera cam; // standard camera
+	private Node rootNode; // rootnode of scene graph
+	private AssetManager assetManager; // asset manager 
+	private InputManager inputManager; // input manager
+	private final static String MAPPING_SHOOT = "Shoot"; // key mapping to shoot using mouse
+	private final static String MAPPING_MOVE_RIGHT= "Move Right"; // key mapping to move right
+	private final static String MAPPING_MOVE_LEFT= "Move Left"; // key mapping to move left
+	private final static String MAPPING_MOVE_UP= "Move Up"; // key mapping to move up 
+	private final static String MAPPING_MOVE_DOWN= "Move Down"; // key mapping to move down
+	private final static String MAPPING_SHOOT_KEY = "Shoot Key"; // key mapping to shoot using keyboard
+	// direction and speed of shot 
 	private float speedX = 0.0f;
 	private float speedY = 0.0f;
 	private float ballSpeed = 0.0f;
-	// create collision parameters
-	//private CollisionResults results0 = new CollisionResults();
-	private CollisionResults results1 = new CollisionResults();
 
-	// check for collision
+	//private CollisionResults results0 = new CollisionResults();
+	private CollisionResults results1 = new CollisionResults(); // collision results 
+
+	// boudning box parameters
 	private Vector3f min = new Vector3f(-70.0f,-70.0f,0.0f);
 	private Vector3f max = new Vector3f(70.0f,70.0f,0.0f);
 	private BoundingBox bb = new BoundingBox(min, max);
-	// guide class field 
+
+	// guiNode class field 
 	private BitmapText distanceText;
 	protected BitmapFont guiFont;
 
+	// cube spatial
 	@SuppressWarnings("deprecation")
 	private static Box mesh = new Box(Vector3f.ZERO, 1, 1, 1);
 
-	private int counter=0;
-	private Camera camera;
-	private Node guiNode;
+	private int counter=0; // interator for debugging 
+	private Camera camera; // camera
+	private Node guiNode; // gui node 
 	public int getCounter() { 
 		return counter; 
 	}
@@ -93,16 +100,26 @@ public class MyGameState extends AbstractAppState {
 		}
 		//rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
 		//rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
-		// clear collision results for boudning box
+		
+		// clear collision results for bounding box
 		results1.clear();
 
 	}        	  
 
+	/**
+	 * method to occure during the closing of program to "clean up"
+	 */
 	@Override
 	public void cleanup(){}
 
+	/**
+	 * Method to initialize parameters for display, input handling, and scene graph
+	 * @param stateManager  AppStateManager to handle AppState behavior 
+	 * @param app			Application to obtain rootNode, AssetManager, guiNode, etc. 
+	 */
 	@Override
 	public void initialize(AppStateManager stateManager, Application app) {
+		// defining class fields from app and stateManager
 		super.initialize(stateManager, app);
 		this.app = (SimpleApplication) app;
 		this.cam = this.app.getCamera();
@@ -159,6 +176,7 @@ public class MyGameState extends AbstractAppState {
 	    ambient.setColor(ColorRGBA.White);
 	    rootNode.addLight(ambient);		
 		
+	    // set camera location
 		Vector3f loc = new Vector3f(0.0f,0.0f,180f);
 		cam.setLocation(loc);
 
@@ -169,6 +187,7 @@ public class MyGameState extends AbstractAppState {
         flyCam.setEnabled(false);
 		 */
 
+		// flycam speed
 		flyCam.setMoveSpeed(1f);
 
 		// make cursor visible
@@ -212,12 +231,19 @@ public class MyGameState extends AbstractAppState {
 		inputManager.addMapping(MAPPING_MOVE_DOWN, TRIGGER_MOVE_DOWN);
 		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_DOWN});
 
+		// create scene spatials, attach to proper nodes, and attach to rootNode
 		genBoundingBox();
 		genPlayer();
 		//makeCubes(10);
 	}
 
-	// cube generator from textbook 
+	/**
+	 * Cube generator from textbook, possible use for enemy spatials
+	 * @param name 		identifier of output geometry
+	 * @param loc		location of geometry output
+	 * @param color		color of output geometry
+	 * @return			output a geometry
+	 */
 	public Geometry myBox(String name, Vector3f loc, ColorRGBA color){
 		Geometry geom = new Geometry(name, mesh);
 		Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -227,10 +253,11 @@ public class MyGameState extends AbstractAppState {
 		return geom;
 	}
 
-	// method to genereate bounding box for gameplay
+	/**
+	 * Generate bounding box for gameplay using connected lines
+	 */
 	private void genBoundingBox(){
 		// using 4 lines, we create a box
-
 		Line line0 = new Line(new Vector3f(-70.0f,70.0f,0.0f) ,new Vector3f(70.0f,70.0f,0.0f) );
 		Line line1 = new Line(new Vector3f(70.0f,70.0f,0.0f) ,new Vector3f(70.0f,-70.0f,0.0f) );
 		Line line2 = new Line(new Vector3f(-70.0f,-70.0f,0.0f) ,new Vector3f(70.0f,-70.0f,0.0f) );
@@ -257,21 +284,26 @@ public class MyGameState extends AbstractAppState {
 
 		Node boundingBox = new Node("bounding box");
 
+		// attach sides to boudingbox node
 		boundingBox.attachChild(side0);
 		boundingBox.attachChild(side1);
 		boundingBox.attachChild(side2);
 		boundingBox.attachChild(side3);
 
+		// attach bounding box to rootNode
 		rootNode.attachChild(boundingBox);
 	}
 
-	// method to create player object
+	/**
+	 * Create player object consisting of two cube geoemtries, a body and a shot
+	 */
 	@SuppressWarnings("deprecation")
 	private void genPlayer(){
 		// create main character cube 
 		Box playerBox = new Box(Vector3f.ZERO, 3, 3, 3);
 		Geometry playerGeom = new Geometry("player cube", playerBox);
-		//Material playerMat = new Material(assetManager,"Common/MatDefs/Misc/Unshaded.j3md");
+
+		// Create materila properties 
 		Material playerMat= new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
 		//playerMat.setColor("Color", ColorRGBA.Red);
 		playerMat.setBoolean("UseMaterialColors", true);
@@ -289,7 +321,6 @@ public class MyGameState extends AbstractAppState {
 		Material shotMat = new Material(assetManager,
 				"Common/MatDefs/Misc/Unshaded.j3md");
 		shotMat.setColor("Color", ColorRGBA.White);
-		// give the object the blue material
 		shotGeom.setMaterial(shotMat);
 
 
@@ -301,11 +332,16 @@ public class MyGameState extends AbstractAppState {
 		// exapmple method call for myBox
 		//mainNode.attachChild(myBox("Blue Cube", new Vector3f(0, -1.5f, 0), ColorRGBA.Blue));
 		//playerNode.attachChild(shotNode);
+
 		playerNode.attachChild(shotNode);
 		rootNode.attachChild(playerNode);
 	}
 
 
+	/**
+	 * Generate randomly located cubes possibly for enemy generation
+	 * @param number 	number of cubes to generate 
+	 */
 	private void makeCubes(int number) {
 		for (int i = 0; i < number; i++) {
 			// randomize 3D coordinates
@@ -316,13 +352,16 @@ public class MyGameState extends AbstractAppState {
 			//rootNode.attachChild(myBox("Cube" + i, loc, ColorRGBA.randomColor()));
 			Geometry geom = myBox("Cube" + i, loc, ColorRGBA.randomColor());
 			if (FastMath.nextRandomInt(1, 4) == 4) {
-				geom.addControl(new CubeChaserControl(cam, rootNode));
+				// add control method for enemy cubes
+				geom.addControl(new MyGameControl(cam, rootNode));
 			}
 			rootNode.attachChild(geom);
 		} 
 	}
 
-	// analog listener method
+	/**
+	 *  Analog listener for shooting with mouse
+	 */
 	private AnalogListener analogListener = new AnalogListener() {
 
 		public void onAnalog(String name, float intensity, float tpf){
@@ -334,6 +373,9 @@ public class MyGameState extends AbstractAppState {
 		}//end onAnalog 
 	}; // end analogListener
 
+	/**
+	 * Action listener for shooting and moving with keyboard
+	 */
 	private ActionListener actionListener = new ActionListener() {
 		public void onAction(String name, boolean isPressed, float tpf) {
 			if (name.equals(MAPPING_MOVE_RIGHT) && !isPressed) {

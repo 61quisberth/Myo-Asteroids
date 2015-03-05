@@ -46,14 +46,21 @@ import java.io.IOException;
 
 public class ConvertToj3o extends SimpleApplication {
 
+	/**
+	 * Create SimpleApplication object and start application
+	 * @param args
+	 */
 	public static void main(String[] args){
 		ConvertToj3o app = new ConvertToj3o();
 		app.start();
 	}
 
+	/**
+	 * Init method: upload mode, add material properties, and add light
+	 */
 	@Override
 	public void simpleInitApp() {
-		// loads a .xml file and adds some material proerties 
+		// loads a .xml file and adds some material properties 
 		Spatial mymodel = assetManager.loadModel("./Textures/Monkey/Suzanne.mesh.xml"); 
 	    Material modelMat = new Material(assetManager, 
 	            "Common/MatDefs/Light/Lighting.j3md");
@@ -75,16 +82,19 @@ public class ConvertToj3o extends SimpleApplication {
 
 	}
 
-	// method to save file into j3o upon closing of diaply or exit of main program
+	/**
+	 * Save file into j3o upon closing of display or exit of main program
+	 */
 	@Override
 	public void stop() {
 		BinaryExporter exporter = BinaryExporter.getInstance();
+		// file to export to
 		File file = new File("./Assets/Models/Monkey/Suzanne.j3o");
+		// try/catch: save file or give out error
 		try {
 			exporter.save(rootNode, file);
 			System.out.println("Converted file to j3o!");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println("error in io");
 			e.printStackTrace();
 		}
