@@ -66,21 +66,21 @@ public class ConvertToj3o extends SimpleApplication {
 	@Override
 	public void simpleInitApp() {
 		// loads a .xml file and adds some material properties 
-		Spatial mymodel = assetManager.loadModel("./Textures/Monkey/Suzanne.mesh.xml"); 
+		Spatial mymodel = assetManager.loadModel("Tank/Tank2.mesh.xml"); 
 	    Material modelMat = new Material(assetManager, 
 	            "Common/MatDefs/Light/Lighting.j3md");
-	    modelMat.setBoolean("UseMaterialColors", true);
-	    modelMat.setColor("Ambient", ColorRGBA.Gray );
+	    //modelMat.setBoolean("UseMaterialColors", true);
+	    /*modelMat.setColor("Ambient", ColorRGBA.Gray );
 	    modelMat.setColor("Diffuse", ColorRGBA.Green);
 	    modelMat.setColor("Specular", ColorRGBA.White );
-	    modelMat.setFloat("Shininess", 20f); // [1,128]
+	    modelMat.setFloat("Shininess", 20f); // [1,128] */
 	    mymodel.setMaterial(modelMat);
 	    
 	    // adding directional light to become visible
-		DirectionalLight dl = new DirectionalLight();
-		dl.setColor(ColorRGBA.White);
-		dl.setDirection(new Vector3f(0,-1,-1).normalizeLocal());
-		rootNode.addLight(dl);
+		//DirectionalLight dl = new DirectionalLight();
+		//dl.setColor(ColorRGBA.White);
+		//dl.setDirection(new Vector3f(0,-1,-1).normalizeLocal());
+		//rootNode.addLight(dl);
 		rootNode.attachChild(mymodel);
 		
 		rootNode.rotate(180, 0, 0);
@@ -94,7 +94,7 @@ public class ConvertToj3o extends SimpleApplication {
 	public void stop() {
 		BinaryExporter exporter = BinaryExporter.getInstance();
 		// file to export to
-		File file = new File("./Assets/Models/Monkey/Suzanne.j3o");
+		File file = new File("./Assets/Models/Tank/Tank.j3o");
 		// try/catch: save file or give out error
 		try {
 			exporter.save(rootNode, file);
