@@ -12,8 +12,11 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.asset.TextureKey;
+import com.jme3.audio.AudioNode;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.collision.CollisionResults;
+import com.jme3.effect.ParticleEmitter;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.input.MouseInput;
@@ -24,6 +27,7 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.input.controls.Trigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.PointLight;
+import com.jme3.effect.ParticleMesh;
 import com.jme3.material.Material;
 import com.jme3.input.*;
 import com.jme3.math.ColorRGBA;
@@ -45,28 +49,37 @@ public class MyGameState extends AbstractAppState {
 	private Node rootNode; // rootnode of scene graph
 	private AssetManager assetManager; // asset manager 
 	private InputManager inputManager; // input manager
-	private final static String MAPPING_SHOOT = "Shoot"; // key mapping to shoot using mouse
 	private final static String MAPPING_MOVE_RIGHT= "Move Right"; // key mapping to move right
 	private final static String MAPPING_MOVE_LEFT= "Move Left"; // key mapping to move left
 	private final static String MAPPING_MOVE_UP= "Move Up"; // key mapping to move up 
 	private final static String MAPPING_MOVE_DOWN= "Move Down"; // key mapping to move down
 	private final static String MAPPING_SHOOT_KEY = "Shoot Key"; // key mapping to shoot using keyboard
 	// direction and speed of shot 
-	private float speedX = 0.0f;
-	private float speedY = 0.0f;
+	private float ballAngle = 5;
+	private Vector3f Vel = new Vector3f(0.0f,0.0f,0.0f);
+	private Vector3f acc = new Vector3f(0.0f,0.0f,0.0f);
 	private float ballSpeed = 0.0f;
+	private float playerSpeed = 15.0f;
 
 	//private CollisionResults results0 = new CollisionResults();
 	private CollisionResults results1 = new CollisionResults(); // collision results 
+	private CollisionResults results2 = new CollisionResults(); // collision results 
 
 	// boudning box parameters
 	private Vector3f min = new Vector3f(-70.0f,-70.0f,0.0f);
 	private Vector3f max = new Vector3f(70.0f,70.0f,0.0f);
 	private BoundingBox bb = new BoundingBox(min, max);
 
+	// node for shot
+	private Node shotNode = new Node("shot");
+
 	// guiNode class field 
 	private BitmapText distanceText;
 	protected BitmapFont guiFont;
+
+	// audio nodes
+	private AudioNode audio_gun;
+	private AudioNode audio_nature;
 
 	// cube spatial
 	@SuppressWarnings("deprecation")
@@ -83,33 +96,45 @@ public class MyGameState extends AbstractAppState {
 	public void update(float tpf) {
 
 		// moving player and shot nodes for gameplay
-		rootNode.getChild("player").move(speedX,speedY,0);
+		Vel.addLocal(acc.mult(10*tpf));
+		//rootNode.getChild("player").move(speedX,speedY,0);
+		rootNode.getChild("player").setLocalTranslation(rootNode.getChild("player").getLocalTranslation().add(Vel.mult(tpf)));
 		rootNode.getChild("shot").move(0.0f,ballSpeed,0.0f);
 
 		// check for intersection 
 		rootNode.getChild("shot").collideWith(bb,results1);
+		rootNode.getChild("player").collideWith(bb,results2);
 
+		// reset acceleration to 0
+		acc = new Vector3f(0.0f,0.0f,0.0f);
 
-		//System.out.println(closest.getDistance());
-		//System.out.println("What was hit? " + closest.getGeometry().getName() );
-
-		//System.out.println(results1.getClosestCollision().getDistance());
-		//System.out.println(results1.size());
-		if (results1.size() <= 6){
-			//System.out.println("Out of Bounds!!");
-			rootNode.getChild("shot").getLocalTranslation().set(0.0f, 0.0f, 0.0f);
+		// check for ship out of bounds 
+		if (results2.size() <= 6){
+			System.out.println("size: " + results2.size());
+			//Vector3f mirror = new Vector3f(-rootNode.getChild("player").getLocalTranslation().x + 1.0f,-rootNode.getChild("player").getLocalTranslation().y+ 1.0f,rootNode.getChild("player").getLocalTranslation().z);
+			Vector3f mirror = new Vector3f(-rootNode.getChild("player").getLocalTranslation().x + 1.0f,-rootNode.getChild("player").getLocalTranslation().y+ 1.0f,rootNode.getChild("player").getLocalTranslation().z);
+			rootNode.getChild("player").getLocalTranslation().set(mirror);
+			//System.out.println("ship out");
 			ballSpeed = 0;
 		}
-		//rootNode.getChild("player").move(0.01f, 0.0f, 0.0f); // displays heiarchal transformations
-		//rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
-		
+
+
+		// if out of bounds, move shot back to original location from ship
+		if (results1.size() <= 6){
+			//rootNode.getChild("shot").getLocalTranslation().set(0.0f, 0.0f, 0.0f);
+			rootNode.getChild("shot").getLocalTranslation().set(rootNode.getChild("player").getLocalTranslation());
+			//rootNode.getChild("player").getLocalTranslation();
+			ballSpeed = 0;
+		}
+
 		// clear collision results for bounding box
 		results1.clear();
+		results2.clear();
 
 	}        	  
 
 	/**
-	 * method to occure during the closing of program to "clean up"
+	 * method to occur during the closing of program to "clean up"
 	 */
 	@Override
 	public void cleanup(){}
@@ -136,23 +161,48 @@ public class MyGameState extends AbstractAppState {
 		// turn off default gui
 		this.app.setDisplayStatView(false);
 		this.app.setDisplayFps(false);
-		
+
+		// particles emmitter for flame start
+		ParticleEmitter fire = 
+				new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 30);
+		Material mat_red = new Material(assetManager, 
+				"Common/MatDefs/Misc/Particle.j3md");
+		mat_red.setTexture("Texture", assetManager.loadTexture(
+				"flame.png"));
+		fire.setMaterial(mat_red);
+		fire.setImagesX(2); 
+		fire.setImagesY(2); // 2x2 texture animation
+		fire.setEndColor(  new ColorRGBA(1f, 0f, 0f, 1f));   // red
+		fire.setStartColor(new ColorRGBA(1f, 1f, 0f, 0.5f)); // yellow
+		fire.getParticleInfluencer().setInitialVelocity(new Vector3f(0, 2, 0));
+		fire.setStartSize(1.5f);
+		fire.setEndSize(0.1f);
+		fire.setGravity(0, 0, 0);
+		fire.setLowLife(1f);
+		fire.setHighLife(3f);
+		fire.getParticleInfluencer().setVelocityVariation(0.3f);
+		//rootNode.attachChild(fire);
+		shotNode.attachChild(fire);
+		// particles emmitter for flame end 
+
+		initAudio();
+
 		// custom gui start
 		// load and attach user interface frame
 		Picture frame = new Picture("User interface frame");
-	       frame.setImage(assetManager, "Interface/frame.png", false);
-	       frame.move(camera.getWidth()/2-265, 0, -2);
-	       frame.setWidth(530);
-	       frame.setHeight(10);
-	       guiNode.attachChild(frame);
-	       
-	       // load and attach logo of monkey 
-	       Picture logo = new Picture("logo");
-	       logo.setImage(assetManager, "Interface/Monkey.png", true);
-	       logo.move(camera.getWidth()/2-47, 2, -1);
-	       logo.setWidth(95);
-	       logo.setHeight(75);
-	       guiNode.attachChild(logo);
+		frame.setImage(assetManager, "Interface/frame.png", false);
+		frame.move(camera.getWidth()/2-265, 0, -2);
+		frame.setWidth(530);
+		frame.setHeight(10);
+		guiNode.attachChild(frame);
+
+		// load and attach logo of monkey 
+		Picture logo = new Picture("logo");
+		logo.setImage(assetManager, "Interface/Monkey.png", true);
+		logo.move(camera.getWidth()/2-47, 2, -1);
+		logo.setWidth(95);
+		logo.setHeight(75);
+		guiNode.attachChild(logo);
 
 
 		// load font, initialize bitmap test obj and attach to gui node
@@ -168,17 +218,17 @@ public class MyGameState extends AbstractAppState {
 		guiNode.attachChild(distanceText);
 		// end of custom gui code
 
-	    /** A white, spot light source. */
-	    PointLight lamp = new PointLight();
-	    lamp.setPosition(new Vector3f(-1,1,15));
-	    lamp.setColor(ColorRGBA.White);
-	    rootNode.addLight(lamp); 
-	    /* A white ambient light source */
-	    AmbientLight ambient = new AmbientLight();
-	    ambient.setColor(ColorRGBA.White);
-	    rootNode.addLight(ambient);		
-		
-	    // set camera location
+		/** A white, spot light source. */
+		PointLight lamp = new PointLight();
+		lamp.setPosition(new Vector3f(-1,1,15));
+		lamp.setColor(ColorRGBA.White);
+		rootNode.addLight(lamp); 
+		/* A white ambient light source */
+		AmbientLight ambient = new AmbientLight();
+		ambient.setColor(ColorRGBA.White);
+		rootNode.addLight(ambient);		
+
+		// set camera location
 		Vector3f loc = new Vector3f(0.0f,0.0f,180f);
 		cam.setLocation(loc);
 
@@ -196,48 +246,61 @@ public class MyGameState extends AbstractAppState {
 		flyCam.setDragToRotate(true);
 		inputManager.setCursorVisible(true);
 
-		// Left buttom mouse trigger
-		final Trigger TRIGGER_SHOOT= new MouseButtonTrigger(MouseInput.BUTTON_LEFT);
-		// add mapping and listener
-		inputManager.addMapping(MAPPING_SHOOT, TRIGGER_SHOOT);
-		inputManager.addListener(analogListener, new String[]{MAPPING_SHOOT});
-
 		//moving keybaord trigger
 		final Trigger TRIGGER_SHOOT_KEY = new KeyTrigger(KeyInput.KEY_SPACE);
 		// add mapping and listener
 		inputManager.addMapping(MAPPING_SHOOT_KEY, TRIGGER_SHOOT_KEY);
-		inputManager.addListener(actionListener, new String[]{MAPPING_SHOOT_KEY});
+		inputManager.addListener(analogListener, new String[]{MAPPING_SHOOT_KEY});
 
 
 		//moving keybaord trigger
 		final Trigger TRIGGER_MOVE_RIGHT = new KeyTrigger(KeyInput.KEY_RIGHT);
 		// add mapping and listener
 		inputManager.addMapping(MAPPING_MOVE_RIGHT, TRIGGER_MOVE_RIGHT);
-		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_RIGHT});
+		inputManager.addListener(analogListener, new String[]{MAPPING_MOVE_RIGHT});
 
 		//moving keybaord trigger
 		final Trigger TRIGGER_MOVE_LEFT = new KeyTrigger(KeyInput.KEY_LEFT);
 		// add mapping and listener
 		inputManager.addMapping(MAPPING_MOVE_LEFT, TRIGGER_MOVE_LEFT);
-		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_LEFT});
+		inputManager.addListener(analogListener, new String[]{MAPPING_MOVE_LEFT});
 
 		//moving keybaord trigger
 		final Trigger TRIGGER_MOVE_UP = new KeyTrigger(KeyInput.KEY_UP);
 		// add mapping and listener
 		inputManager.addMapping(MAPPING_MOVE_UP, TRIGGER_MOVE_UP);
-		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_UP});
+		inputManager.addListener(analogListener, new String[]{MAPPING_MOVE_UP});
 
 		//moving keybaord trigger
 		final Trigger TRIGGER_MOVE_DOWN= new KeyTrigger(KeyInput.KEY_DOWN);
 		// add mapping and listener
 		inputManager.addMapping(MAPPING_MOVE_DOWN, TRIGGER_MOVE_DOWN);
-		inputManager.addListener(actionListener, new String[]{MAPPING_MOVE_DOWN});
+		inputManager.addListener(analogListener, new String[]{MAPPING_MOVE_DOWN});
 
 		// create scene spatials, attach to proper nodes, and attach to rootNode
 		genBoundingBox();
 		genPlayer();
 		//makeCubes(10);
 	}
+
+	private void initAudio(){
+		/** We create two audio nodes. */
+		/* gun shot sound is to be triggered by a mouse click. */
+		audio_gun = new AudioNode(assetManager, "Gun.wav", false);
+		audio_gun.setPositional(false);
+		audio_gun.setLooping(false);
+		audio_gun.setVolume(2);
+		rootNode.attachChild(audio_gun);
+
+		/* nature sound - keeps playing in a loop. */
+		audio_nature = new AudioNode(assetManager, "Ocean Waves.ogg", true); // only mono for this type
+		audio_nature.setLooping(true);  // activate continuous playing
+		audio_nature.setPositional(true);   
+		audio_nature.setVolume(3);
+		rootNode.attachChild(audio_nature);
+		audio_nature.play(); // play continuously!
+	}
+
 
 	/**
 	 * Cube generator from textbook, possible use for enemy spatials
@@ -301,6 +364,8 @@ public class MyGameState extends AbstractAppState {
 	 */
 	@SuppressWarnings("deprecation")
 	private void genPlayer(){
+
+		/*
 		// create main character cube 
 		Box playerBox = new Box(Vector3f.ZERO, 3, 3, 3);
 		Geometry playerGeom = new Geometry("player cube", playerBox);
@@ -314,6 +379,42 @@ public class MyGameState extends AbstractAppState {
 		playerMat.setColor("Specular", ColorRGBA.White );
 		playerMat.setFloat("Shininess", 100f); // [1,128]
 		playerGeom.setMaterial(playerMat);
+		 */
+
+
+		//FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+		//viewPort.addProcessor(fpp);
+		//BloomFilter bloom =
+		//		new BloomFilter(BloomFilter.GlowMode.SceneAndObjects);
+		//fpp.addFilter(bloom);
+
+		Node playerBox= (Node) assetManager.loadModel(
+				"Tank/Tank.j3o");
+		Material mat = new Material(
+				assetManager, "Common/MatDefs/Light/Lighting.j3md");
+		// loading diffuse, normal, specular, and glow texture maps
+		TextureKey tankDiffuse = new TextureKey(
+				"Tank/tank_diffuse.jpg", false);
+		mat.setTexture("DiffuseMap",
+				assetManager.loadTexture(tankDiffuse));
+		TextureKey tankNormal = new TextureKey(
+				"Tank/tank_normals.png", false);
+		mat.setTexture("NormalMap",
+				assetManager.loadTexture(tankNormal));
+		TextureKey tankSpecular= new TextureKey(
+				"Tank/tank_specular.jpg", false);
+		mat.setTexture("SpecularMap",
+				assetManager.loadTexture(tankSpecular));
+		//TextureKey tankGlow = new TextureKey(
+		//		"Tank/tank_glow_map.jpg", false);
+		//mat.setTexture("GlowMap",
+		//		assetManager.loadTexture(tankGlow));
+		//mat.setColor("GlowColor", ColorRGBA.Red);
+
+		playerBox.setMaterial(mat);
+		//rootNode.attachChild(playerBox);
+
+
 
 		// create a shot cube 
 		Vector3f shotPos = new Vector3f(0.0f,4.0f,0.0f);
@@ -328,14 +429,16 @@ public class MyGameState extends AbstractAppState {
 
 		// scene graph, spatials, and root node attachment 
 		Node playerNode = new Node("player");
-		Node shotNode= new Node("shot");
-		playerNode.attachChild(playerGeom);
+		Node shipNode = new Node("ship");
+		//shotNode= new Node("shot");
+		playerNode.attachChild(playerBox);
 		shotNode.attachChild(shotGeom);
-		// exapmple method call for myBox
+
+		// example method call for myBox
 		//mainNode.attachChild(myBox("Blue Cube", new Vector3f(0, -1.5f, 0), ColorRGBA.Blue));
 		//playerNode.attachChild(shotNode);
 
-		playerNode.attachChild(shotNode);
+		rootNode.attachChild(shotNode);
 		rootNode.attachChild(playerNode);
 	}
 
@@ -367,41 +470,25 @@ public class MyGameState extends AbstractAppState {
 	private AnalogListener analogListener = new AnalogListener() {
 
 		public void onAnalog(String name, float intensity, float tpf){
-			if (name.equals(MAPPING_SHOOT)) {
-
-				rootNode.getChild("shot").move(0.0f, 0.1f, 0.0f);
-
+			if (name.equals(MAPPING_SHOOT_KEY)) {
+				ballSpeed = 1.0f;
+				//audio_gun.play();
+				audio_gun.playInstance();
+			}// end if 
+			else if (name.equals(MAPPING_MOVE_LEFT)) {
+				rootNode.getChild("player").rotate(0,0,ballAngle*tpf);
+			}// end if 
+			else if (name.equals(MAPPING_MOVE_RIGHT)) {
+				rootNode.getChild("player").rotate(0,0,-ballAngle*tpf);
+			}// end if 
+			else if (name.equals(MAPPING_MOVE_UP)) {
+				//thrust += 0.008;
+				acc = rootNode.getChild("player").getLocalRotation().getRotationColumn(1).normalize().mult(playerSpeed);
+			}// end if 
+			else if (name.equals(MAPPING_MOVE_DOWN)) {
+				//thrust -= 0.008;
 			}// end if 
 		}//end onAnalog 
 	}; // end analogListener
-
-	/**
-	 * Action listener for shooting and moving with keyboard
-	 */
-	private ActionListener actionListener = new ActionListener() {
-		public void onAction(String name, boolean isPressed, float tpf) {
-			if (name.equals(MAPPING_MOVE_RIGHT) && !isPressed) {
-				// implement action here
-				speedX +=0.1f;
-			}
-			else if (name.equals(MAPPING_MOVE_LEFT) && !isPressed) {
-				// implement action here
-				speedX -=0.1f;
-			}
-			else if (name.equals(MAPPING_MOVE_UP) && !isPressed) {
-				// implement action here
-				speedY +=0.1f;
-			}
-			else if (name.equals(MAPPING_MOVE_DOWN) && !isPressed) {
-				// implement action here
-				speedY -=0.1f;
-			}
-			else if (name.equals(MAPPING_SHOOT_KEY) && !isPressed) {
-				// implement action here
-				ballSpeed = 1.0f;
-			}
-
-		}
-	};
 
 }
