@@ -2,6 +2,8 @@
 Java Asteroids featuring a Myo controller 
 by Jason Quisberth 
 
+Audio "Arcade" from CUA music student Justus Parota
+
 Current Course project for CS 582 Game Programming Coure at Catholic University 
 Textbook: jMonkeyEngine 3.0 Beginners Guide by Ruth Kusterer
 
@@ -75,5 +77,8 @@ Created javadoc-style documentation
 
 3/30/15
 completed ch 6-9 in textbook
-included sample source sode from book and website for audio, physics, and particle emitter 
+included sample source code from book and jme website for audio, physics, and particle emitter 
 todo: documentation and cleanup of global variables
+
+4/1/15
+documentation and code clean up

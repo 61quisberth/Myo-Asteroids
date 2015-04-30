@@ -27,13 +27,16 @@ public class MyGameControl extends AbstractControl{
 	 * Method to print out the identity of a spatial to the console
 	 * @return returns an id of a spatial to be printed out to the console
 	 */
+	/*
 	public String hello(){
 		return "Hello, my name is "+spatial.getName();
 	}
+	*/
 
 	/**
 	 * Implement of the behavior of the control
 	 * Rotate spatial causing call of control
+	 * Keeping for possible use with asteroid spatials
 	 */
 	@Override
 	protected void controlUpdate(float tpf) {

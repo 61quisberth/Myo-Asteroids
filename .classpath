@@ -11,7 +11,11 @@
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jglfont-core.jar"/>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jinput.jar"/>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jME3-blender.jar"/>
-	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jME3-core.jar"/>
+	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jME3-core.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/Users/jason_quisberth/jME3_2014-06-12/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jME3-desktop.jar"/>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jME3-effects.jar"/>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/jME3-jbullet.jar"/>
@@ -34,5 +38,12 @@
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/stack-alloc.jar"/>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/vecmath.jar"/>
 	<classpathentry kind="lib" path="/Users/jason_quisberth/jME3_2014-06-12/lib/xmlpull-xpp3.jar"/>
+	<classpathentry kind="lib" path="/Users/jason_quisberth/myo-java-0.8.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="/Users/jason_quisberth/myo-java-0.8.2-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/jason_quisberth/myo-java-0.8.2.jar" sourcepath="/Users/jason_quisberth/myo-java-0.8.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/Users/jason_quisberth/myo-java-0.8.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
